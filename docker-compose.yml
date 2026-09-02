@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: 'mysql:8.0'
+    container_name: evente-set-mysql
+    environment:
+      # O Docker já vai criar esse database na primeira vez que subir
+      - 'MYSQL_DATABASE=eventeset_db'
+      - 'MYSQL_ROOT_PASSWORD=root'
+    ports:
+      # Expõe a porta do MySQL para sua máquina local na porta 3307
+      - '3307:3306'
+    volumes:
+      # Persiste os dados do banco mesmo se o container for reiniciado/destruído
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
