@@ -3,10 +3,12 @@ package tfs.evente_set.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tfs.evente_set.domain.Cardapio;
 import tfs.evente_set.domain.Convidado;
 import tfs.evente_set.domain.Evento;
 import tfs.evente_set.domain.Mesa;
 import tfs.evente_set.dto.ConvidadoDTO;
+import tfs.evente_set.repository.CardapioRepository;
 import tfs.evente_set.repository.ConvidadoRepository;
 import tfs.evente_set.repository.EventoRepository;
 import tfs.evente_set.repository.MesaRepository;
@@ -21,6 +23,7 @@ public class ConvidadoService {
     private final ConvidadoRepository convidadoRepository;
     private final MesaRepository mesaRepository;
     private final EventoRepository eventoRepository;
+    private final CardapioRepository cardapioRepository;
 
     @Transactional
     public ConvidadoDTO adicionarConvidado(Long eventoId, ConvidadoDTO dto) {
@@ -66,11 +69,30 @@ public class ConvidadoService {
         return mapToDTO(salvo);
     }
 
+    @Transactional
+    public ConvidadoDTO vincularCardapio(Long convidadoId, Long cardapioId) {
+        Convidado convidado = convidadoRepository.findById(convidadoId)
+                .orElseThrow(() -> new RuntimeException("Convidado não encontrado"));
+                
+        Cardapio cardapio = cardapioRepository.findById(cardapioId)
+                .orElseThrow(() -> new RuntimeException("Cardápio não encontrado"));
+                
+        // Only allow linking if the cardapio is predefined or belongs to the same event
+        if (!cardapio.getPreDefinido() && (cardapio.getEvento() == null || !cardapio.getEvento().getId().equals(convidado.getEvento().getId()))) {
+            throw new RuntimeException("O cardápio selecionado não está disponível para este evento");
+        }
+        
+        convidado.setCardapio(cardapio);
+        Convidado salvo = convidadoRepository.save(convidado);
+        return mapToDTO(salvo);
+    }
+
     private ConvidadoDTO mapToDTO(Convidado c) {
         return new ConvidadoDTO(
                 c.getId(), 
                 c.getEvento().getId(), 
                 c.getMesa() != null ? c.getMesa().getId() : null, 
+                c.getCardapio() != null ? c.getCardapio().getId() : null,
                 c.getNome(), 
                 c.getConfirmado(), 
                 c.getRestricoesAlimentares()

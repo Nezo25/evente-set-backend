@@ -19,6 +19,10 @@ public class Convidado {
     @JoinColumn(name = "mesa_id")
     private Mesa mesa;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cardapio_id")
+    private Cardapio cardapio;
+
     @Column(nullable = false)
     private String nome;
 

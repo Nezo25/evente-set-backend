@@ -27,9 +27,17 @@ public class ConvidadoController {
 
     @PutMapping("/{id}/acomodar")
     public ResponseEntity<ConvidadoDTO> acomodarConvidado(
-            @PathVariable Long eventoId, // eventoId está na rota, mas usamos id e mesaId no service
+            @PathVariable Long eventoId,
             @PathVariable Long id, 
             @RequestParam Long mesaId) {
         return ResponseEntity.ok(convidadoService.acomodarConvidado(id, mesaId));
+    }
+
+    @PutMapping("/{id}/cardapio")
+    public ResponseEntity<ConvidadoDTO> vincularCardapio(
+            @PathVariable Long eventoId,
+            @PathVariable Long id,
+            @RequestParam Long cardapioId) {
+        return ResponseEntity.ok(convidadoService.vincularCardapio(id, cardapioId));
     }
 }
