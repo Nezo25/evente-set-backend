@@ -24,7 +24,13 @@ public class CardapioService {
     private final ItemCardapioRepository itemCardapioRepository;
 
     @Transactional(readOnly = true)
-    public List<CardapioDTO> listarPreDefinidos() {
+    public List<CardapioDTO> listarPreDefinidos(String tipoEvento) {
+        if (tipoEvento != null && !tipoEvento.isBlank()) {
+            return cardapioRepository.findByPreDefinidoTrueAndTipoEvento(tipoEvento)
+                    .stream()
+                    .map(this::toDTO)
+                    .collect(Collectors.toList());
+        }
         return cardapioRepository.findByPreDefinidoTrue()
                 .stream()
                 .map(this::toDTO)
@@ -44,6 +50,7 @@ public class CardapioService {
         Cardapio cardapio = new Cardapio();
         cardapio.setNome(dto.nome());
         cardapio.setPreDefinido(dto.preDefinido() != null ? dto.preDefinido() : false);
+        cardapio.setTipoEvento(dto.tipoEvento());
 
         if (eventoId != null) {
             Evento evento = eventoRepository.findById(eventoId)
@@ -60,6 +67,28 @@ public class CardapioService {
         cardapio = cardapioRepository.save(cardapio);
         return toDTO(cardapio);
     }
+    
+    @Transactional
+    public CardapioDTO atualizarCardapio(Long id, CardapioDTO dto) {
+        Cardapio cardapio = cardapioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cardápio não encontrado"));
+        cardapio.setNome(dto.nome());
+        if (dto.preDefinido() != null) cardapio.setPreDefinido(dto.preDefinido());
+        cardapio.setTipoEvento(dto.tipoEvento());
+        
+        if (dto.itens() != null) {
+            List<Long> itemIds = dto.itens().stream().map(ItemCardapioDTO::id).collect(Collectors.toList());
+            List<ItemCardapio> itens = itemCardapioRepository.findAllById(itemIds);
+            cardapio.setItens(itens);
+        }
+        cardapio = cardapioRepository.save(cardapio);
+        return toDTO(cardapio);
+    }
+    
+    @Transactional
+    public void excluirCardapio(Long id) {
+        cardapioRepository.deleteById(id);
+    }
 
     private CardapioDTO toDTO(Cardapio cardapio) {
         List<ItemCardapioDTO> itensDTO = cardapio.getItens().stream()
@@ -72,6 +101,7 @@ public class CardapioService {
                 cardapio.getId(),
                 cardapio.getNome(),
                 cardapio.getPreDefinido(),
+                cardapio.getTipoEvento(),
                 eventoId,
                 itensDTO
         );

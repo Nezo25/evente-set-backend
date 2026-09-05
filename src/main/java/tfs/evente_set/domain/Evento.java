@@ -2,6 +2,7 @@ package tfs.evente_set.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.TenantId;
 import java.time.LocalDateTime;
 
 @Data
@@ -11,6 +12,10 @@ public class Evento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @TenantId
+    @Column(name = "tenant_id", nullable = false)
+    private String tenantId;
 
     @Column(name = "nome_cliente", nullable = false)
     private String nomeCliente;

@@ -33,11 +33,33 @@ public class ConvidadoService {
         Convidado convidado = new Convidado();
         convidado.setEvento(evento);
         convidado.setNome(dto.nome());
+        convidado.setTelefone(dto.telefone());
         convidado.setConfirmado(dto.confirmado());
         convidado.setRestricoesAlimentares(dto.restricoesAlimentares());
+        convidado.setTag(dto.tag());
+        convidado.setGrupoFamilia(dto.grupoFamilia());
+        convidado.setTokenRsvp(java.util.UUID.randomUUID().toString());
         
         Convidado salvo = convidadoRepository.save(convidado);
         return mapToDTO(salvo);
+    }
+    
+    @Transactional
+    public ConvidadoDTO atualizarConvidado(Long id, ConvidadoDTO dto) {
+        Convidado convidado = convidadoRepository.findById(id).orElseThrow(() -> new RuntimeException("Convidado não encontrado"));
+        convidado.setNome(dto.nome());
+        convidado.setTelefone(dto.telefone());
+        convidado.setTag(dto.tag());
+        convidado.setGrupoFamilia(dto.grupoFamilia());
+        if (dto.confirmado() != null) convidado.setConfirmado(dto.confirmado());
+        if (dto.restricoesAlimentares() != null) convidado.setRestricoesAlimentares(dto.restricoesAlimentares());
+        
+        return mapToDTO(convidadoRepository.save(convidado));
+    }
+    
+    @Transactional
+    public void deletarConvidado(Long id) {
+        convidadoRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
@@ -70,6 +92,16 @@ public class ConvidadoService {
     }
 
     @Transactional
+    public ConvidadoDTO desacomodarConvidado(Long convidadoId) {
+        Convidado convidado = convidadoRepository.findById(convidadoId)
+                .orElseThrow(() -> new RuntimeException("Convidado não encontrado"));
+                
+        convidado.setMesa(null);
+        Convidado salvo = convidadoRepository.save(convidado);
+        return mapToDTO(salvo);
+    }
+
+    @Transactional
     public ConvidadoDTO vincularCardapio(Long convidadoId, Long cardapioId) {
         Convidado convidado = convidadoRepository.findById(convidadoId)
                 .orElseThrow(() -> new RuntimeException("Convidado não encontrado"));
@@ -77,7 +109,6 @@ public class ConvidadoService {
         Cardapio cardapio = cardapioRepository.findById(cardapioId)
                 .orElseThrow(() -> new RuntimeException("Cardápio não encontrado"));
                 
-        // Only allow linking if the cardapio is predefined or belongs to the same event
         if (!cardapio.getPreDefinido() && (cardapio.getEvento() == null || !cardapio.getEvento().getId().equals(convidado.getEvento().getId()))) {
             throw new RuntimeException("O cardápio selecionado não está disponível para este evento");
         }
@@ -87,6 +118,39 @@ public class ConvidadoService {
         return mapToDTO(salvo);
     }
 
+    @Transactional
+    public ConvidadoDTO checkin(Long convidadoId) {
+        Convidado convidado = convidadoRepository.findById(convidadoId)
+                .orElseThrow(() -> new RuntimeException("Convidado não encontrado"));
+        convidado.setPresente(true);
+        convidado.setDataHoraCheckin(java.time.LocalDateTime.now());
+        return mapToDTO(convidadoRepository.save(convidado));
+    }
+
+    @Transactional(readOnly = true)
+    public ConvidadoDTO buscarPorTokenRsvp(String token) {
+        Convidado convidado = convidadoRepository.findByTokenRsvp(token)
+                .orElseThrow(() -> new RuntimeException("Token inválido"));
+        return mapToDTO(convidado);
+    }
+
+    @Transactional
+    public ConvidadoDTO confirmarRsvp(String token, ConvidadoDTO dto) {
+        Convidado convidado = convidadoRepository.findByTokenRsvp(token)
+                .orElseThrow(() -> new RuntimeException("Token inválido"));
+        convidado.setConfirmado(dto.confirmado());
+        convidado.setRestricoesAlimentares(dto.restricoesAlimentares());
+        return mapToDTO(convidadoRepository.save(convidado));
+    }
+
+    @Transactional
+    public ConvidadoDTO atualizarTelefone(Long id, String telefone) {
+        Convidado convidado = convidadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Convidado não encontrado"));
+        convidado.setTelefone(telefone);
+        return mapToDTO(convidadoRepository.save(convidado));
+    }
+
     private ConvidadoDTO mapToDTO(Convidado c) {
         return new ConvidadoDTO(
                 c.getId(), 
@@ -94,8 +158,14 @@ public class ConvidadoService {
                 c.getMesa() != null ? c.getMesa().getId() : null, 
                 c.getCardapio() != null ? c.getCardapio().getId() : null,
                 c.getNome(), 
+                c.getTelefone(),
                 c.getConfirmado(), 
-                c.getRestricoesAlimentares()
+                c.getRestricoesAlimentares(),
+                c.getTag(),
+                c.getTokenRsvp(),
+                c.getPresente(),
+                c.getDataHoraCheckin(),
+                c.getGrupoFamilia()
         );
     }
 }

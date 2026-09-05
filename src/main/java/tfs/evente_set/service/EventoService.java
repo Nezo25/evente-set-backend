@@ -45,4 +45,16 @@ public class EventoService {
     public void deletarEvento(Long id) {
         eventoRepository.deleteById(id);
     }
+    
+    @Transactional
+    public EventoDTO atualizarEvento(Long id, EventoDTO dto) {
+        Evento evento = eventoRepository.findById(id).orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+        evento.setNomeCliente(dto.nomeCliente());
+        evento.setTipoEvento(dto.tipoEvento());
+        evento.setDataEvento(dto.dataEvento());
+        evento.setTotalConvidadosEstimado(dto.totalConvidadosEstimado());
+        if (dto.status() != null) evento.setStatus(dto.status());
+        Evento salvo = eventoRepository.save(evento);
+        return new EventoDTO(salvo.getId(), salvo.getNomeCliente(), salvo.getTipoEvento(), salvo.getDataEvento(), salvo.getTotalConvidadosEstimado(), salvo.getStatus());
+    }
 }

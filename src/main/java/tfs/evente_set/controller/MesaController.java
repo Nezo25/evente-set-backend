@@ -24,4 +24,12 @@ public class MesaController {
     public ResponseEntity<List<MesaDTO>> listarMesasDoEvento(@PathVariable Long eventoId) {
         return ResponseEntity.ok(mesaService.listarMesasDoEvento(eventoId));
     }
+
+    @PutMapping("/{id}/posicao")
+    public ResponseEntity<MesaDTO> atualizarPosicao(
+            @PathVariable Long eventoId,
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Double> payload) {
+        return ResponseEntity.ok(mesaService.atualizarPosicao(id, payload.get("positionX"), payload.get("positionY")));
+    }
 }

@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface CardapioRepository extends JpaRepository<Cardapio, Long> {
     List<Cardapio> findByPreDefinidoTrue();
+    List<Cardapio> findByPreDefinidoTrueAndTipoEvento(String tipoEvento);
     List<Cardapio> findByEventoId(Long eventoId);
 }

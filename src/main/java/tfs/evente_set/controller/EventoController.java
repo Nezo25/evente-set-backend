@@ -35,4 +35,9 @@ public class EventoController {
         eventoService.deletarEvento(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<EventoDTO> atualizarEvento(@PathVariable Long id, @RequestBody EventoDTO dto) {
+        return ResponseEntity.ok(eventoService.atualizarEvento(id, dto));
+    }
 }

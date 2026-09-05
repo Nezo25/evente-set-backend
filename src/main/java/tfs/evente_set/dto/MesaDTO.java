@@ -5,5 +5,7 @@ public record MesaDTO(
     Long eventoId,
     String identificador,
     Integer capacidadeMaxima,
-    Integer ocupacaoAtual // Campo calculado útil para a UI
+    Integer ocupacaoAtual,
+    Double positionX,
+    Double positionY
 ) {}

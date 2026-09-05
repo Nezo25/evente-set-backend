@@ -9,4 +9,5 @@ import java.util.List;
 public interface ConvidadoRepository extends JpaRepository<Convidado, Long> {
     List<Convidado> findByEventoId(Long eventoId);
     List<Convidado> findByMesaId(Long mesaId);
+    java.util.Optional<Convidado> findByTokenRsvp(String tokenRsvp);
 }

@@ -2,6 +2,7 @@ package tfs.evente_set.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.TenantId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +15,18 @@ public class Cardapio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @TenantId
+    @Column(name = "tenant_id", nullable = false)
+    private String tenantId;
+
     @Column(nullable = false)
     private String nome;
 
     @Column(name = "is_pre_definido", nullable = false)
     private Boolean preDefinido = false;
+
+    @Column(name = "tipo_evento")
+    private String tipoEvento; // ex: Casamento, Corporativo, Aniversário
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evento_id")

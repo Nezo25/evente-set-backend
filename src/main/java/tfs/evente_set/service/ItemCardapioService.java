@@ -28,6 +28,22 @@ public class ItemCardapioService {
         ItemCardapio salvo = itemCardapioRepository.save(item);
         return new ItemCardapioDTO(salvo.getId(), salvo.getNome(), salvo.getDescricao(), salvo.getCategoria(), salvo.getAlergenos());
     }
+    
+    @Transactional
+    public ItemCardapioDTO atualizarItem(Long id, ItemCardapioDTO dto) {
+        ItemCardapio item = itemCardapioRepository.findById(id).orElseThrow(() -> new RuntimeException("Item não encontrado"));
+        item.setNome(dto.nome());
+        item.setDescricao(dto.descricao());
+        item.setCategoria(dto.categoria());
+        item.setAlergenos(dto.alergenos());
+        ItemCardapio salvo = itemCardapioRepository.save(item);
+        return new ItemCardapioDTO(salvo.getId(), salvo.getNome(), salvo.getDescricao(), salvo.getCategoria(), salvo.getAlergenos());
+    }
+    
+    @Transactional
+    public void deletarItem(Long id) {
+        itemCardapioRepository.deleteById(id);
+    }
 
     @Transactional(readOnly = true)
     public List<ItemCardapioDTO> listarTodos() {

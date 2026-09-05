@@ -32,7 +32,17 @@ public class MesaService {
         mesa.setCapacidadeMaxima(dto.capacidadeMaxima());
         
         Mesa salva = mesaRepository.save(mesa);
-        return new MesaDTO(salva.getId(), salva.getEvento().getId(), salva.getIdentificador(), salva.getCapacidadeMaxima(), 0);
+        return new MesaDTO(salva.getId(), salva.getEvento().getId(), salva.getIdentificador(), salva.getCapacidadeMaxima(), 0, salva.getPositionX(), salva.getPositionY());
+    }
+
+    @Transactional
+    public MesaDTO atualizarPosicao(Long id, Double positionX, Double positionY) {
+        Mesa mesa = mesaRepository.findById(id).orElseThrow(() -> new RuntimeException("Mesa não encontrada"));
+        mesa.setPositionX(positionX);
+        mesa.setPositionY(positionY);
+        Mesa salva = mesaRepository.save(mesa);
+        int ocupacao = convidadoRepository.findByMesaId(salva.getId()).size();
+        return new MesaDTO(salva.getId(), salva.getEvento().getId(), salva.getIdentificador(), salva.getCapacidadeMaxima(), ocupacao, salva.getPositionX(), salva.getPositionY());
     }
 
     @Transactional(readOnly = true)
@@ -40,7 +50,7 @@ public class MesaService {
         return mesaRepository.findByEventoId(eventoId).stream()
                 .map(m -> {
                     int ocupacao = convidadoRepository.findByMesaId(m.getId()).size();
-                    return new MesaDTO(m.getId(), m.getEvento().getId(), m.getIdentificador(), m.getCapacidadeMaxima(), ocupacao);
+                    return new MesaDTO(m.getId(), m.getEvento().getId(), m.getIdentificador(), m.getCapacidadeMaxima(), ocupacao, m.getPositionX(), m.getPositionY());
                 })
                 .collect(Collectors.toList());
     }

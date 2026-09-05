@@ -6,6 +6,12 @@ public record ConvidadoDTO(
     Long mesaId,
     Long cardapioId,
     String nome,
+    String telefone,
     Boolean confirmado,
-    String restricoesAlimentares
+    String restricoesAlimentares,
+    String tag,
+    String tokenRsvp,
+    Boolean presente,
+    java.time.LocalDateTime dataHoraCheckin,
+    String grupoFamilia
 ) {}
