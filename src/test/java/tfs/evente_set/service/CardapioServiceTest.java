@@ -54,7 +54,7 @@ public class CardapioServiceTest {
     void deveListarCardapiosPreDefinidos() {
         when(cardapioRepository.findByPreDefinidoTrue()).thenReturn(Arrays.asList(cardapioGold));
 
-        List<CardapioDTO> result = cardapioService.listarPreDefinidos();
+        List<CardapioDTO> result = cardapioService.listarPreDefinidos(null);
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -64,7 +64,7 @@ public class CardapioServiceTest {
 
     @Test
     void deveCriarCardapioPersonalizado() {
-        CardapioDTO dto = new CardapioDTO(null, "Meu Menu", false, 10L, List.of());
+        CardapioDTO dto = new CardapioDTO(null, "Meu Menu", false, "Casamento", 10L, List.of());
         
         when(eventoRepository.findById(10L)).thenReturn(Optional.of(evento));
         
