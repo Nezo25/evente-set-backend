@@ -5,5 +5,6 @@ public enum CategoriaEnum {
     VOLANTE, 
     PRINCIPAL, 
     SOBREMESA, 
+    BEBIDA,
     ESTACAO_OUTROS
 }
