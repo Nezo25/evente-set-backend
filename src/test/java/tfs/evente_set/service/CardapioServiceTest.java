@@ -74,7 +74,7 @@ public class CardapioServiceTest {
         salvo.setPreDefinido(false);
         salvo.setEvento(evento);
         
-        when(cardapioRepository.save(any(Cardapio.class))).thenReturn(salvo);
+        when(cardapioRepository.saveAndFlush(any(Cardapio.class))).thenReturn(salvo);
 
         CardapioDTO result = cardapioService.criarCardapio(10L, dto);
 
@@ -83,6 +83,6 @@ public class CardapioServiceTest {
         assertEquals(10L, result.eventoId());
         assertFalse(result.preDefinido());
         verify(eventoRepository, times(1)).findById(10L);
-        verify(cardapioRepository, times(1)).save(any(Cardapio.class));
+        verify(cardapioRepository, times(1)).saveAndFlush(any(Cardapio.class));
     }
 }

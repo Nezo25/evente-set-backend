@@ -64,8 +64,20 @@ public class CardapioService {
             cardapio.setItens(itens);
         }
 
-        cardapio = cardapioRepository.save(cardapio);
-        return toDTO(cardapio);
+        try {
+            cardapio = cardapioRepository.saveAndFlush(cardapio);
+            return toDTO(cardapio);
+        } catch (Exception e) {
+            Throwable root = e;
+            while (root.getCause() != null) {
+                root = root.getCause();
+            }
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, 
+                "Falha ao salvar cardápio: " + root.getMessage(), 
+                e
+            );
+        }
     }
     
     @Transactional
@@ -81,8 +93,21 @@ public class CardapioService {
             List<ItemCardapio> itens = itemCardapioRepository.findAllById(itemIds);
             cardapio.setItens(itens);
         }
-        cardapio = cardapioRepository.save(cardapio);
-        return toDTO(cardapio);
+
+        try {
+            cardapio = cardapioRepository.saveAndFlush(cardapio);
+            return toDTO(cardapio);
+        } catch (Exception e) {
+            Throwable root = e;
+            while (root.getCause() != null) {
+                root = root.getCause();
+            }
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, 
+                "Falha ao salvar cardápio: " + root.getMessage(), 
+                e
+            );
+        }
     }
     
     @Transactional
