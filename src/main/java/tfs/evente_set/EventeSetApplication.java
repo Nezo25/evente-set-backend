@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EventeSetApplication {
 
 	public static void main(String[] args) {
+		System.setProperty("spring.jpa.hibernate.ddl-auto", "update");
 		SpringApplication.run(EventeSetApplication.class, args);
 	}
 
