@@ -28,5 +28,12 @@ public class DatabaseTableInitializer implements ApplicationRunner {
         } catch (Exception e) {
             System.err.println("Aviso ao inicializar cardapio_itens: " + e.getMessage());
         }
+
+        try {
+            jdbcTemplate.execute("ALTER TABLE itens_cardapio MODIFY COLUMN categoria VARCHAR(50) NOT NULL");
+            System.out.println("Coluna categoria de itens_cardapio atualizada para VARCHAR(50)!");
+        } catch (Exception e) {
+            System.err.println("Aviso ao atualizar coluna categoria: " + e.getMessage());
+        }
     }
 }
